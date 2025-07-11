@@ -374,7 +374,7 @@
             if (savedTemplate) {
                 try {
                     templateFields = JSON.parse(savedTemplate);
-                    showTemplateStatus('Loaded saved template', 3000);
+                    showTemplateStatus('Loaded saved template. Click "Reset to Default" to see the new fields.', 5000);
                 } catch (e) {
                     console.error('Error loading saved template:', e);
                     templateFields = JSON.parse(JSON.stringify(defaultTemplateFields));
@@ -444,7 +444,7 @@
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = 'template-field';
                 
-                fieldDiv.innerHTML = 
+                fieldDiv.innerHTML = `
                     <input type="text" value="${field.name}" onchange="updateFieldName(${index}, this.value)" 
                            placeholder="Field name" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
                     <select class="field-type-select" onchange="updateFieldType(${index}, this.value)">
@@ -461,7 +461,7 @@
                         <button class="remove-field-btn" onclick="removeTemplateField(${index})" 
                                 style="margin-left: 20px;">Remove</button>
                     </div>
-                ;
+                `;
                 
                 container.appendChild(fieldDiv);
             });
@@ -475,7 +475,7 @@
         // Template field management functions
         function addTemplateField() {
             templateFields.push({ 
-                name: Field ${templateFields.length + 1}, 
+                name: `Field ${templateFields.length + 1}`, 
                 type: 'data', 
                 required: false 
             });
@@ -507,9 +507,9 @@
         function log(message, type = 'info') {
             const logContainer = document.getElementById('logContainer');
             const entry = document.createElement('div');
-            entry.className = log-entry log-${type};
+            entry.className = `log-entry log-${type}`;
             const timestamp = new Date().toLocaleTimeString();
-            entry.textContent = [${timestamp}] ${message};
+            entry.textContent = `[${timestamp}] ${message}`;
             logContainer.appendChild(entry);
             logContainer.scrollTop = logContainer.scrollHeight;
         }
@@ -576,7 +576,7 @@
         // Read data file for preview
         function readDataFileForPreview(file) {
             return new Promise((resolve, reject) => {
-                log(Reading data file: ${file.name}, 'info');
+                log(`Reading data file: ${file.name}`, 'info');
                 const reader = new FileReader();
                 
                 reader.onload = (e) => {
@@ -590,7 +590,7 @@
                             blankrows: false 
                         });
                         
-                        log(Found ${jsonData.length} rows in data file, 'info');
+                        log(`Found ${jsonData.length} rows in data file`, 'info');
                         resolve(jsonData);
                     } catch (error) {
                         reject(error);
@@ -615,7 +615,7 @@
                 
                 const rowNumTd = document.createElement('td');
                 rowNumTd.className = 'row-number';
-                rowNumTd.textContent = Row ${i + 1};
+                rowNumTd.textContent = `Row ${i + 1}`;
                 tr.appendChild(rowNumTd);
                 
                 const colsToShow = Math.min(8, row.length);
@@ -628,7 +628,7 @@
                 
                 if (row.length > 8) {
                     const td = document.createElement('td');
-                    td.textContent = ... +${row.length - 8} more columns;
+                    td.textContent = `... +${row.length - 8} more columns`;
                     td.style.fontStyle = 'italic';
                     tr.appendChild(td);
                 }
@@ -654,9 +654,9 @@
             }
             
             document.getElementById('confirmHeaderBtn').disabled = false;
-            document.getElementById('selectedRowInfo').textContent = Selected: Row ${rowIndex + 1};
+            document.getElementById('selectedRowInfo').textContent = `Selected: Row ${rowIndex + 1}`;
             
-            log(User selected row ${rowIndex + 1} as header row, 'info');
+            log(`User selected row ${rowIndex + 1} as header row`, 'info');
         }
 
         // Confirm header selection
@@ -676,7 +676,7 @@
                     throw new Error('Selected row has no valid column headers');
                 }
                 
-                log(Found ${headers.length} columns in selected header row, 'success');
+                log(`Found ${headers.length} columns in selected header row`, 'success');
                 
                 const rows = [];
                 for (let i = selectedHeaderRow + 1; i < rawDataFileData.length; i++) {
@@ -699,7 +699,7 @@
                     }
                 }
                 
-                log(Processed ${rows.length} data rows, 'success');
+                log(`Processed ${rows.length} data rows`, 'success');
                 
                 dataFileData = { headers, rows };
                 
@@ -712,7 +712,7 @@
                 }, 1500);
                 
             } catch (error) {
-                log(Error processing data: ${error.message}, 'error');
+                log(`Error processing data: ${error.message}`, 'error');
                 alert('Error processing data: ' + error.message);
                 document.getElementById('progress').style.display = 'none';
             }
@@ -743,7 +743,7 @@
                     // Data field - needs mapping
                     const select = document.createElement('select');
                     select.className = 'manual-input';
-                    select.id = mapping-${index};
+                    select.id = `mapping-${index}`;
                     
                     const pendingOption = document.createElement('option');
                     pendingOption.value = 'PENDING';
@@ -768,7 +768,7 @@
                             fieldMappings[index] = { type: 'data', value: matchedField };
                             matchedCount++;
                             statusText = '✓ Matched';
-                            log(Auto-matched: "${field.name}" → "${matchedField}", 'success');
+                            log(`Auto-matched: "${field.name}" → "${matchedField}"`, 'success');
                         } else {
                             select.value = 'PENDING';
                             fieldMappings[index] = { type: 'data', value: 'PENDING' };
@@ -789,7 +789,7 @@
                                        fieldMappings[index].value : 'No';
                     fieldMappings[index] = { type: 'yesno', value: currentValue };
                     
-                    inputElement = 
+                    inputElement = `
                         <div class="yes-no-toggle">
                             <label>
                                 <input type="radio" name="yesno-${index}" value="Yes" 
@@ -804,7 +804,7 @@
                                 No
                             </label>
                         </div>
-                    ;
+                    `;
                     statusText = '✓ Manual';
                     
                 } else if (field.type === 'text') {
@@ -813,18 +813,18 @@
                                        fieldMappings[index].value : '';
                     fieldMappings[index] = { type: 'text', value: currentValue };
                     
-                    inputElement = 
+                    inputElement = `
                         <input type="text" class="manual-input" id="text-${index}" 
                                placeholder="Enter ${field.name}"
                                value="${currentValue}"
                                onchange="updateTextInput(${index}, this.value)">
-                    ;
+                    `;
                     statusText = '✓ Manual';
                 }
                 
                 const status = document.createElement('span');
                 status.className = 'status';
-                status.id = status-${index};
+                status.id = `status-${index}`;
                 status.textContent = statusText;
                 status.classList.add(statusText.includes('Manual') ? 'manual' : 
                                    statusText.includes('Matched') ? 'matched' : 'pending');
@@ -837,7 +837,7 @@
             });
             
             if (!existingMappings) {
-                log(Setup complete: ${matchedCount} fields auto-matched, 'info');
+                log(`Setup complete: ${matchedCount} fields auto-matched`, 'info');
             } else {
                 log('Returned to mapping with preserved values', 'info');
             }
@@ -846,7 +846,7 @@
         }
 
         function updateMappingStatus(index, value) {
-            const status = document.getElementById(status-${index});
+            const status = document.getElementById(`status-${index}`);
             if (value === 'PENDING') {
                 status.textContent = '⚠ Pending';
                 status.className = 'status pending';
@@ -875,7 +875,7 @@
             dataFileData.rows.forEach((dataRow, rowIndex) => {
                 if (rowIndex % 100 === 0) {
                     const percent = Math.round((rowIndex / dataFileData.rows.length) * 100);
-                    updateProgress(percent, Processing row ${rowIndex + 1} of ${dataFileData.rows.length});
+                    updateProgress(percent, `Processing row ${rowIndex + 1} of ${dataFileData.rows.length}`);
                 }
                 
                 const processedRow = {};
@@ -913,7 +913,7 @@
             const warningMessage = document.getElementById('warningMessage');
             
             warningMessage.innerHTML = pendingCount > 0 
-                ? <strong>Attention:</strong> ${pendingCount} fields marked as PENDING need to be filled.
+                ? `<strong>Attention:</strong> ${pendingCount} fields marked as PENDING need to be filled.`
                 : '<strong>Success!</strong> All fields have been processed successfully.';
             
             previewTable.innerHTML = '';
@@ -953,7 +953,7 @@
                 td.colSpan = templateFields.length;
                 td.style.textAlign = 'center';
                 td.style.fontStyle = 'italic';
-                td.textContent = ... and ${processedData.length - 10} more rows;
+                td.textContent = `... and ${processedData.length - 10} more rows`;
                 moreRow.appendChild(td);
                 previewTable.appendChild(moreRow);
             }
@@ -971,14 +971,14 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'Processed Data');
                 
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-                const filename = processed_data_${timestamp}.xlsx;
+                const filename = `processed_data_${timestamp}.xlsx`;
                 
                 XLSX.writeFile(wb, filename);
                 
                 log('Download completed!', 'success');
                 
             } catch (error) {
-                log(Error during download: ${error.message}, 'error');
+                log(`Error during download: ${error.message}`, 'error');
                 alert('Error downloading file: ' + error.message);
             }
         }
@@ -1022,7 +1022,7 @@
                 }, 1000);
                 
             } catch (error) {
-                log(Error reading data file: ${error}, 'error');
+                log(`Error reading data file: ${error}`, 'error');
                 alert('Error reading data file: ' + error);
                 document.getElementById('progress').style.display = 'none';
             }
