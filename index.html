@@ -3,220 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Processor with Built-in Template</title>
+    <title>SKU Processor - Template & Upload System</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1400px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-        h1 {
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #e9ecef;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active:hover {
+            background: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
             color: #333;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .section {
-            margin-bottom: 25px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-        .template-config {
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
+        
         .template-field {
             display: grid;
-            grid-template-columns: 200px 150px 1fr;
-            gap: 10px;
+            grid-template-columns: 250px 180px 150px 100px;
+            gap: 15px;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 3px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
+        
+        .template-field:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .field-input {
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s ease;
+        }
+        
+        .field-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
         .field-type-select {
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        .file-input-wrapper {
-            margin-bottom: 20px;
-        }
-        input[type="file"] {
-            padding: 10px;
-            border: 2px dashed #ddd;
-            border-radius: 5px;
-            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            font-size: 1em;
             cursor: pointer;
         }
-        button {
-            background: #007bff;
-            color: white;
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 12px 24px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
-            margin-right: 10px;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        button:hover {
-            background: #0056b3;
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
         }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        .preview-section {
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        
+        .template-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .upload-section {
+            text-align: center;
+            padding: 60px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border: 3px dashed #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #f3f4f6;
+        }
+        
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .upload-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .upload-subtitle {
+            font-size: 1.1em;
+            color: #6c757d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .file-label:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .file-info {
             margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            color: #2e7d32;
+            display: none;
+        }
+        
+        .preview-section {
+            margin-top: 30px;
             max-height: 400px;
             overflow: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            display: none;
         }
+        
         .preview-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
         }
-        .preview-table th, .preview-table td {
-            border: 1px solid #ddd;
-            padding: 6px;
+        
+        .preview-table th,
+        .preview-table td {
+            padding: 10px;
+            border: 1px solid #e9ecef;
             text-align: left;
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
+        
+        .preview-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
         .preview-table tr {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background 0.2s ease;
         }
+        
         .preview-table tr:hover {
-            background-color: #e9ecef !important;
+            background: #f8f9fa;
         }
+        
         .preview-table tr.selected-header {
-            background-color: #007bff !important;
+            background: #667eea;
             color: white;
         }
+        
         .row-number {
-            background: #f0f0f0;
-            font-weight: bold;
+            background: #e9ecef;
+            font-weight: 600;
             text-align: center;
-            width: 50px;
         }
+        
         .mapping-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 30px;
         }
-        .mapping-section {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 5px;
-        }
+        
         .mapping-item {
             display: grid;
-            grid-template-columns: 200px 1fr 100px;
-            gap: 10px;
+            grid-template-columns: 250px 1fr 120px;
+            gap: 15px;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 3px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
-        .mapping-item select {
-            padding: 5px;
+        
+        .mapping-item label {
+            font-weight: 600;
+            color: #333;
         }
-        .manual-input {
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            width: 100%;
-        }
-        .yes-no-toggle {
-            display: flex;
-            gap: 10px;
-        }
-        .yes-no-toggle label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .yes-no-toggle input[type="radio"] {
-            margin-right: 5px;
-        }
+        
         .status {
-            font-weight: bold;
             text-align: center;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
-        .status.matched { color: green; }
-        .status.manual { color: blue; }
-        .status.pending { color: orange; }
+        
+        .status.matched {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status.manual {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         .final-preview-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 14px;
         }
-        .final-preview-table th, .final-preview-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
+        
+        .final-preview-table th,
+        .final-preview-table td {
+            padding: 12px;
+            border: 1px solid #e9ecef;
             text-align: left;
         }
+        
         .final-preview-table th {
-            background: #f0f0f0;
-            font-weight: bold;
+            background: #f8f9fa;
+            font-weight: 600;
         }
+        
         .pending-cell {
-            background: #fff3cd !important;
+            background: #fff3cd;
             color: #856404;
         }
+        
         .manual-cell {
-            background: #cce5ff !important;
-            color: #004085;
+            background: #e3f2fd;
+            color: #1565c0;
         }
+        
         .alert {
-            padding: 15px;
+            padding: 15px 20px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
         }
+        
         .alert-warning {
             background: #fff3cd;
             color: #856404;
             border: 1px solid #ffeeba;
         }
+        
         .progress {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            z-index: 1000;
             display: none;
-            margin-top: 20px;
+            min-width: 400px;
         }
+        
         .progress-bar-container {
             width: 100%;
             height: 30px;
-            background: #f0f0f0;
+            background: #e9ecef;
             border-radius: 15px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 20px 0;
         }
+        
         .progress-bar {
             height: 100%;
-            background: #007bff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             width: 0%;
             transition: width 0.3s ease;
             display: flex;
@@ -225,117 +468,158 @@
             color: white;
             font-weight: bold;
         }
-        .log-container {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 15px;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
         }
-        .log-entry {
-            margin: 2px 0;
-        }
-        .log-success { color: #4caf50; }
-        .log-warning { color: #ff9800; }
-        .log-error { color: #f44336; }
-        .log-info { color: #2196f3; }
-        .instruction-box {
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .add-field-btn {
-            background: #4caf50;
-            font-size: 14px;
-            padding: 8px 15px;
-        }
-        .remove-field-btn {
-            background: #f44336;
-            padding: 5px 10px;
-            font-size: 12px;
+        
+        @media (max-width: 768px) {
+            .template-field {
+                grid-template-columns: 1fr;
+            }
+            
+            .mapping-item {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CatalogoGo Ver JC con vibe coding</h1>
+    <div class="main-container">
+        <div class="header">
+            <h1>📊 SKU Processor System</h1>
+            <p>Configure your template and process Excel files</p>
+        </div>
         
-        <div class="section">
-            <h3>Template Configuration</h3>
-            <div class="template-config">
-                <p><strong>Configure your template fields below. You can add, remove, or change field types.</strong></p>
+        <div class="tabs">
+            <button class="tab" onclick="switchTab('template')">
+                📋 Template Configuration
+            </button>
+            <button class="tab active" onclick="switchTab('upload')">
+                📤 Upload & Process
+            </button>
+        </div>
+        
+        <!-- Template Tab -->
+        <div id="template-tab" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">
+                    ⚙️ Configure Template Fields
+                </h2>
+                <p style="margin-bottom: 20px; color: #6c757d;">
+                    Add, remove, or modify fields for your SKU template. These fields will be mapped to your Excel file columns.
+                </p>
+                
                 <div id="templateFields"></div>
-                <button class="add-field-btn" onclick="addTemplateField()">+ Add Field</button>
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                    <button onclick="saveTemplate()" style="background: #4caf50;">💾 Save Template</button>
-                    <button onclick="loadTemplate()" style="background: #ff9800;">📂 Load Saved Template</button>
-                    <button onclick="resetTemplate()" style="background: #f44336;">🔄 Reset to Default</button>
-                    <span id="templateStatus" style="margin-left: 15px; font-weight: bold; color: #4caf50; display: none;"></span>
+                
+                <button class="btn btn-primary" onclick="addTemplateField()">
+                    ➕ Add New Field
+                </button>
+                
+                <div class="template-actions">
+                    <button class="btn btn-success" onclick="saveTemplate()">
+                        💾 Save Template
+                    </button>
+                    <button class="btn btn-warning" onclick="loadTemplate()">
+                        📂 Load Saved Template
+                    </button>
+                    <button class="btn btn-danger" onclick="resetTemplate()">
+                        🔄 Reset to Default
+                    </button>
+                    <span id="templateStatus" style="margin-left: 20px; font-weight: bold; color: #48bb78; display: none;"></span>
                 </div>
             </div>
         </div>
-
-        <div class="section">
-            <h3>Step 1: Upload Data File</h3>
-            <div class="file-input-wrapper">
-                <input type="file" id="dataFile" accept=".csv,.xlsx,.xls">
-                <span id="dataStatus" style="margin-left: 10px; color: green; display: none;">✓ File loaded</span>
+        
+        <!-- Upload Tab -->
+        <div id="upload-tab" class="tab-content active">
+            <div class="section">
+                <div class="upload-section" id="uploadSection">
+                    <div class="upload-icon">📁</div>
+                    <h2 class="upload-title">Suba su archivo de Excel</h2>
+                    <p class="upload-subtitle">
+                        Recuerde que debe de llevar los campos referidos para poder crear el SKU.<br>
+                        Formatos aceptados: .xlsx, .xls, .csv
+                    </p>
+                    <label for="dataFile" class="file-label">
+                        Seleccionar Archivo
+                    </label>
+                    <input type="file" id="dataFile" accept=".csv,.xlsx,.xls">
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+                
+                <div class="preview-section" id="headerSelectionSection">
+                    <div class="alert alert-info">
+                        📌 Haga clic en la fila que contiene los encabezados de sus columnas
+                    </div>
+                    <table class="preview-table" id="headerPreviewTable"></table>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn btn-primary" id="confirmHeaderBtn" onclick="confirmHeaderSelection()" disabled>
+                            Confirmar Fila de Encabezados
+                        </button>
+                        <span id="selectedRowInfo" style="margin-left: 15px; font-weight: bold;"></span>
+                    </div>
+                </div>
+                
+                <div id="mappingSection" style="display: none;">
+                    <h2 class="section-title">
+                        🔗 Field Mapping
+                    </h2>
+                    <div class="mapping-container" id="fieldMappingContainer"></div>
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button class="btn btn-primary" onclick="processData()">
+                            Process Data
+                        </button>
+                        <button class="btn btn-danger" onclick="resetAll()">
+                            Start Over
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="previewSection" style="display: none;">
+                    <h2 class="section-title">
+                        ✅ Preview & Download
+                    </h2>
+                    <div class="alert alert-warning" id="warningMessage"></div>
+                    <div style="overflow-x: auto;">
+                        <table class="final-preview-table" id="previewTable"></table>
+                    </div>
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button class="btn btn-success" onclick="downloadProcessed()">
+                            📥 Download Processed File
+                        </button>
+                        <button class="btn btn-primary" onclick="goBackToMapping()">
+                            Back to Mapping
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div id="headerSelectionSection" class="section" style="display: none;">
-            <h3>Step 2: Select Header Row</h3>
-            <div class="instruction-box">
-                <h4>📌 Click on the row that contains your column headers</h4>
-                <p>Please click on the row that contains your column names (headers).</p>
-            </div>
-            <div class="preview-section">
-                <table class="preview-table" id="headerPreviewTable"></table>
-            </div>
-            <div style="margin-top: 15px;">
-                <button id="confirmHeaderBtn" onclick="confirmHeaderSelection()" disabled>Confirm Header Row Selection</button>
-                <span id="selectedRowInfo" style="margin-left: 15px; font-weight: bold;"></span>
-            </div>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    <div class="progress" id="progress">
+        <h3>Processing...</h3>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar">0%</div>
         </div>
-
-        <div id="mappingSection" class="section" style="display: none;">
-            <h3>Step 3: Map Fields and Enter Manual Data</h3>
-            <div class="alert alert-info">
-                Map your data file columns to template fields. For Yes/No and Text fields, you can enter values manually.
-            </div>
-            <div id="fieldMappingContainer"></div>
-            <button onclick="processData()" id="processBtn">Process Data</button>
-            <button onclick="resetAll()">Start Over</button>
-        </div>
-
-        <div id="previewSection" class="section" style="display: none;">
-            <h3>Step 4: Preview and Download</h3>
-            <div class="alert alert-warning" id="warningMessage"></div>
-            <div style="overflow-x: auto;">
-                <table class="final-preview-table" id="previewTable"></table>
-            </div>
-            <button onclick="downloadProcessed()" style="background: #28a745;">Download Processed File</button>
-            <button onclick="goBackToMapping()">Back to Mapping</button>
-        </div>
-
-        <div class="progress" id="progress">
-            <p>Processing...</p>
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar">0%</div>
-            </div>
-            <div class="log-container" id="logContainer"></div>
-        </div>
+        <p id="progressMessage" style="text-align: center; margin-top: 10px; color: #6c757d;"></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        // Default template fields
+        // Default template fields with your specified fields
         const defaultTemplateFields = [
             { name: 'Name PROV', type: 'data', required: true },
             { name: 'NO. PROV', type: 'data', required: true },
@@ -368,13 +652,28 @@
         let fieldMappings = {};
         let selectedHeaderRow = -1;
 
-        // Initialize template from localStorage or default
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Initialize template
         function initializeTemplate() {
-            const savedTemplate = localStorage.getItem('dataProcessorTemplate');
+            const savedTemplate = localStorage.getItem('skuProcessorTemplate');
             if (savedTemplate) {
                 try {
                     templateFields = JSON.parse(savedTemplate);
-                    showTemplateStatus('Loaded saved template. Click "Reset to Default" to see the new fields.', 5000);
+                    showTemplateStatus('Loaded saved template', 3000);
                 } catch (e) {
                     console.error('Error loading saved template:', e);
                     templateFields = JSON.parse(JSON.stringify(defaultTemplateFields));
@@ -385,57 +684,7 @@
             updateTemplateDisplay();
         }
 
-        // Save template to localStorage
-        function saveTemplate() {
-            try {
-                localStorage.setItem('dataProcessorTemplate', JSON.stringify(templateFields));
-                showTemplateStatus('✓ Template saved successfully!', 3000);
-                log('Template configuration saved', 'success');
-            } catch (e) {
-                console.error('Error saving template:', e);
-                alert('Error saving template. Your browser might not support local storage.');
-            }
-        }
-
-        // Load saved template
-        function loadTemplate() {
-            const savedTemplate = localStorage.getItem('dataProcessorTemplate');
-            if (savedTemplate) {
-                try {
-                    templateFields = JSON.parse(savedTemplate);
-                    updateTemplateDisplay();
-                    showTemplateStatus('✓ Template loaded!', 3000);
-                    log('Saved template loaded', 'success');
-                } catch (e) {
-                    console.error('Error loading saved template:', e);
-                    alert('Error loading saved template.');
-                }
-            } else {
-                alert('No saved template found.');
-            }
-        }
-
-        // Reset to default template
-        function resetTemplate() {
-            if (confirm('Are you sure you want to reset to the default template? This will not affect your saved template.')) {
-                templateFields = JSON.parse(JSON.stringify(defaultTemplateFields));
-                updateTemplateDisplay();
-                showTemplateStatus('✓ Reset to default template', 3000);
-                log('Template reset to default', 'info');
-            }
-        }
-
-        // Show status message
-        function showTemplateStatus(message, duration) {
-            const statusElement = document.getElementById('templateStatus');
-            statusElement.textContent = message;
-            statusElement.style.display = 'inline';
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, duration);
-        }
-
-        // Update template fields display
+        // Update template display
         function updateTemplateDisplay() {
             const container = document.getElementById('templateFields');
             container.innerHTML = '';
@@ -445,34 +694,34 @@
                 fieldDiv.className = 'template-field';
                 
                 fieldDiv.innerHTML = `
-                    <input type="text" value="${field.name}" onchange="updateFieldName(${index}, this.value)" 
-                           placeholder="Field name" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                    <input type="text" class="field-input" value="${field.name}" 
+                           onchange="updateFieldName(${index}, this.value)" 
+                           placeholder="Field name">
                     <select class="field-type-select" onchange="updateFieldType(${index}, this.value)">
                         <option value="data" ${field.type === 'data' ? 'selected' : ''}>Data from file</option>
                         <option value="yesno" ${field.type === 'yesno' ? 'selected' : ''}>Yes/No</option>
                         <option value="text" ${field.type === 'text' ? 'selected' : ''}>Text input</option>
                     </select>
-                    <div>
-                        <label>
-                            <input type="checkbox" ${field.required ? 'checked' : ''} 
-                                   onchange="updateFieldRequired(${index}, this.checked)">
-                            Required
-                        </label>
-                        <button class="remove-field-btn" onclick="removeTemplateField(${index})" 
-                                style="margin-left: 20px;">Remove</button>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="required-${index}" ${field.required ? 'checked' : ''} 
+                               onchange="updateFieldRequired(${index}, this.checked)">
+                        <label for="required-${index}">Required</label>
                     </div>
+                    <button class="btn btn-danger btn-small" onclick="removeTemplateField(${index})">
+                        Remove
+                    </button>
                 `;
                 
                 container.appendChild(fieldDiv);
             });
             
-            // Auto-save whenever template is updated
+            // Auto-save
             if (container.children.length > 0) {
-                localStorage.setItem('dataProcessorTemplate', JSON.stringify(templateFields));
+                localStorage.setItem('skuProcessorTemplate', JSON.stringify(templateFields));
             }
         }
 
-        // Template field management functions
+        // Template management functions
         function addTemplateField() {
             templateFields.push({ 
                 name: `Field ${templateFields.length + 1}`, 
@@ -480,12 +729,14 @@
                 required: false 
             });
             updateTemplateDisplay();
+            showTemplateStatus('Field added', 2000);
         }
 
         function removeTemplateField(index) {
             if (templateFields.length > 1) {
                 templateFields.splice(index, 1);
                 updateTemplateDisplay();
+                showTemplateStatus('Field removed', 2000);
             } else {
                 alert('You must have at least one field in the template');
             }
@@ -493,25 +744,62 @@
 
         function updateFieldName(index, value) {
             templateFields[index].name = value;
+            localStorage.setItem('skuProcessorTemplate', JSON.stringify(templateFields));
         }
 
         function updateFieldType(index, value) {
             templateFields[index].type = value;
+            localStorage.setItem('skuProcessorTemplate', JSON.stringify(templateFields));
         }
 
         function updateFieldRequired(index, value) {
             templateFields[index].required = value;
+            localStorage.setItem('skuProcessorTemplate', JSON.stringify(templateFields));
         }
 
-        // Logging functions
-        function log(message, type = 'info') {
-            const logContainer = document.getElementById('logContainer');
-            const entry = document.createElement('div');
-            entry.className = `log-entry log-${type}`;
-            const timestamp = new Date().toLocaleTimeString();
-            entry.textContent = `[${timestamp}] ${message}`;
-            logContainer.appendChild(entry);
-            logContainer.scrollTop = logContainer.scrollHeight;
+        function saveTemplate() {
+            localStorage.setItem('skuProcessorTemplate', JSON.stringify(templateFields));
+            showTemplateStatus('✓ Template saved successfully!', 3000);
+        }
+
+        function loadTemplate() {
+            const savedTemplate = localStorage.getItem('skuProcessorTemplate');
+            if (savedTemplate) {
+                templateFields = JSON.parse(savedTemplate);
+                updateTemplateDisplay();
+                showTemplateStatus('✓ Template loaded!', 3000);
+            } else {
+                alert('No saved template found.');
+            }
+        }
+
+        function resetTemplate() {
+            if (confirm('Are you sure you want to reset to the default template?')) {
+                templateFields = JSON.parse(JSON.stringify(defaultTemplateFields));
+                updateTemplateDisplay();
+                showTemplateStatus('✓ Reset to default template', 3000);
+            }
+        }
+
+        function showTemplateStatus(message, duration) {
+            const statusElement = document.getElementById('templateStatus');
+            statusElement.textContent = message;
+            statusElement.style.display = 'inline';
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, duration);
+        }
+
+        // Progress functions
+        function showProgress(message) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('progress').style.display = 'block';
+            document.getElementById('progressMessage').textContent = message || '';
+        }
+
+        function hideProgress() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('progress').style.display = 'none';
         }
 
         function updateProgress(percent, message) {
@@ -519,12 +807,137 @@
             progressBar.style.width = percent + '%';
             progressBar.textContent = percent + '%';
             if (message) {
-                log(message, 'info');
+                document.getElementById('progressMessage').textContent = message;
             }
         }
 
-        function clearLog() {
-            document.getElementById('logContainer').innerHTML = '';
+        // File processing functions
+        function readDataFileForPreview(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
+                            header: 1,
+                            defval: '',
+                            blankrows: false 
+                        });
+                        
+                        resolve(jsonData);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // Show header selection
+        function showHeaderSelectionPreview() {
+            const table = document.getElementById('headerPreviewTable');
+            table.innerHTML = '';
+            
+            const rowsToShow = Math.min(15, rawDataFileData.length);
+            
+            for (let i = 0; i < rowsToShow; i++) {
+                const row = rawDataFileData[i];
+                const tr = document.createElement('tr');
+                tr.dataset.rowIndex = i;
+                
+                const rowNumTd = document.createElement('td');
+                rowNumTd.className = 'row-number';
+                rowNumTd.textContent = `Row ${i + 1}`;
+                tr.appendChild(rowNumTd);
+                
+                const colsToShow = Math.min(8, row.length);
+                for (let j = 0; j < colsToShow; j++) {
+                    const td = document.createElement('td');
+                    td.textContent = row[j] || '(empty)';
+                    td.title = row[j] || '(empty)';
+                    tr.appendChild(td);
+                }
+                
+                if (row.length > 8) {
+                    const td = document.createElement('td');
+                    td.textContent = `... +${row.length - 8} more`;
+                    td.style.fontStyle = 'italic';
+                    tr.appendChild(td);
+                }
+                
+                tr.onclick = function() {
+                    selectHeaderRow(i);
+                };
+                
+                table.appendChild(tr);
+            }
+            
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('headerSelectionSection').style.display = 'block';
+        }
+
+        function selectHeaderRow(rowIndex) {
+            selectedHeaderRow = rowIndex;
+            
+            const rows = document.querySelectorAll('#headerPreviewTable tr');
+            rows.forEach(row => row.classList.remove('selected-header'));
+            if (rows[rowIndex]) {
+                rows[rowIndex].classList.add('selected-header');
+            }
+            
+            document.getElementById('confirmHeaderBtn').disabled = false;
+            document.getElementById('selectedRowInfo').textContent = `Selected: Row ${rowIndex + 1}`;
+        }
+
+        function confirmHeaderSelection() {
+            if (selectedHeaderRow === -1) return;
+            
+            showProgress('Processing selected headers...');
+            updateProgress(50, 'Extracting column information...');
+            
+            setTimeout(() => {
+                try {
+                    const headers = rawDataFileData[selectedHeaderRow].filter(h => h && h.toString().trim() !== '');
+                    const rows = [];
+                    
+                    for (let i = selectedHeaderRow + 1; i < rawDataFileData.length; i++) {
+                        const row = rawDataFileData[i];
+                        if (!row || row.length === 0) continue;
+                        
+                        const obj = {};
+                        let hasData = false;
+                        
+                        headers.forEach((header, index) => {
+                            const value = row[index];
+                            obj[header] = value || '';
+                            if (value && value.toString().trim() !== '') {
+                                hasData = true;
+                            }
+                        });
+                        
+                        if (hasData) {
+                            rows.push(obj);
+                        }
+                    }
+                    
+                    dataFileData = { headers, rows };
+                    updateProgress(100, 'Headers processed successfully!');
+                    
+                    setTimeout(() => {
+                        hideProgress();
+                        document.getElementById('headerSelectionSection').style.display = 'none';
+                        setupFieldMapping();
+                    }, 1000);
+                    
+                } catch (error) {
+                    hideProgress();
+                    alert('Error processing headers: ' + error.message);
+                }
+            }, 500);
         }
 
         // Smart field matching
@@ -542,7 +955,7 @@
             
             const normalizedTemplate = normalize(templateField);
             
-            // Special case for NO. PROV
+            // Special cases
             if (templateField === 'NO. PROV' || templateField === 'NO.PROV') {
                 const providerVariations = ['providercode', 'provcode', 'providerno', 'provno', 'code', 'providerid', 'noprov'];
                 for (let dataField of dataFields) {
@@ -573,177 +986,32 @@
             return null;
         }
 
-        // Read data file for preview
-        function readDataFileForPreview(file) {
-            return new Promise((resolve, reject) => {
-                log(`Reading data file: ${file.name}`, 'info');
-                const reader = new FileReader();
-                
-                reader.onload = (e) => {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
-                            header: 1,
-                            defval: '',
-                            blankrows: false 
-                        });
-                        
-                        log(`Found ${jsonData.length} rows in data file`, 'info');
-                        resolve(jsonData);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                
-                reader.readAsArrayBuffer(file);
-            });
-        }
-
-        // Show header selection preview
-        function showHeaderSelectionPreview() {
-            const table = document.getElementById('headerPreviewTable');
-            table.innerHTML = '';
-            
-            const rowsToShow = Math.min(15, rawDataFileData.length);
-            
-            for (let i = 0; i < rowsToShow; i++) {
-                const row = rawDataFileData[i];
-                const tr = document.createElement('tr');
-                tr.dataset.rowIndex = i;
-                
-                const rowNumTd = document.createElement('td');
-                rowNumTd.className = 'row-number';
-                rowNumTd.textContent = `Row ${i + 1}`;
-                tr.appendChild(rowNumTd);
-                
-                const colsToShow = Math.min(8, row.length);
-                for (let j = 0; j < colsToShow; j++) {
-                    const td = document.createElement('td');
-                    td.textContent = row[j] || '(empty)';
-                    td.title = row[j] || '(empty)';
-                    tr.appendChild(td);
-                }
-                
-                if (row.length > 8) {
-                    const td = document.createElement('td');
-                    td.textContent = `... +${row.length - 8} more columns`;
-                    td.style.fontStyle = 'italic';
-                    tr.appendChild(td);
-                }
-                
-                tr.onclick = function() {
-                    selectHeaderRow(i);
-                };
-                
-                table.appendChild(tr);
-            }
-            
-            document.getElementById('headerSelectionSection').style.display = 'block';
-        }
-
-        // Select header row
-        function selectHeaderRow(rowIndex) {
-            selectedHeaderRow = rowIndex;
-            
-            const rows = document.querySelectorAll('#headerPreviewTable tr');
-            rows.forEach(row => row.classList.remove('selected-header'));
-            if (rows[rowIndex]) {
-                rows[rowIndex].classList.add('selected-header');
-            }
-            
-            document.getElementById('confirmHeaderBtn').disabled = false;
-            document.getElementById('selectedRowInfo').textContent = `Selected: Row ${rowIndex + 1}`;
-            
-            log(`User selected row ${rowIndex + 1} as header row`, 'info');
-        }
-
-        // Confirm header selection
-        function confirmHeaderSelection() {
-            if (selectedHeaderRow === -1) {
-                alert('Please select a header row first');
-                return;
-            }
-            
-            document.getElementById('progress').style.display = 'block';
-            updateProgress(50, 'Processing data with selected header row...');
-            
-            try {
-                const headers = rawDataFileData[selectedHeaderRow].filter(h => h && h.toString().trim() !== '');
-                
-                if (headers.length === 0) {
-                    throw new Error('Selected row has no valid column headers');
-                }
-                
-                log(`Found ${headers.length} columns in selected header row`, 'success');
-                
-                const rows = [];
-                for (let i = selectedHeaderRow + 1; i < rawDataFileData.length; i++) {
-                    const row = rawDataFileData[i];
-                    if (!row || row.length === 0) continue;
-                    
-                    const obj = {};
-                    let hasData = false;
-                    
-                    headers.forEach((header, index) => {
-                        const value = row[index];
-                        obj[header] = value || '';
-                        if (value && value.toString().trim() !== '') {
-                            hasData = true;
-                        }
-                    });
-                    
-                    if (hasData) {
-                        rows.push(obj);
-                    }
-                }
-                
-                log(`Processed ${rows.length} data rows`, 'success');
-                
-                dataFileData = { headers, rows };
-                
-                updateProgress(100, 'Data processing complete!');
-                
-                setTimeout(() => {
-                    document.getElementById('progress').style.display = 'none';
-                    document.getElementById('headerSelectionSection').style.display = 'none';
-                    setupFieldMapping();
-                }, 1500);
-                
-            } catch (error) {
-                log(`Error processing data: ${error.message}`, 'error');
-                alert('Error processing data: ' + error.message);
-                document.getElementById('progress').style.display = 'none';
-            }
-        }
-
         // Setup field mapping
         function setupFieldMapping() {
             const container = document.getElementById('fieldMappingContainer');
             container.innerHTML = '';
             
-            // Preserve existing mappings if returning from preview
             const existingMappings = Object.keys(fieldMappings).length > 0;
-            
-            let matchedCount = 0;
             
             templateFields.forEach((field, index) => {
                 const mappingDiv = document.createElement('div');
                 mappingDiv.className = 'mapping-item';
                 
                 const label = document.createElement('label');
-                label.textContent = field.name + ':';
+                label.textContent = field.name;
                 label.style.fontWeight = field.required ? 'bold' : 'normal';
+                if (field.required) {
+                    label.textContent += ' *';
+                }
                 
                 let inputElement = '';
+                let statusClass = '';
                 let statusText = '';
                 
                 if (field.type === 'data') {
-                    // Data field - needs mapping
                     const select = document.createElement('select');
-                    select.className = 'manual-input';
-                    select.id = `mapping-${index}`;
+                    select.className = 'field-input';
+                    select.style.width = '100%';
                     
                     const pendingOption = document.createElement('option');
                     pendingOption.value = 'PENDING';
@@ -757,22 +1025,23 @@
                         select.appendChild(option);
                     });
                     
-                    // Check for existing mapping or try smart matching
+                    // Check existing or smart match
                     if (existingMappings && fieldMappings[index]) {
                         select.value = fieldMappings[index].value;
                         statusText = fieldMappings[index].value === 'PENDING' ? '⚠ Pending' : '✓ Matched';
+                        statusClass = fieldMappings[index].value === 'PENDING' ? 'pending' : 'matched';
                     } else {
                         const matchedField = smartFieldMatch(field.name, dataFileData.headers);
                         if (matchedField) {
                             select.value = matchedField;
                             fieldMappings[index] = { type: 'data', value: matchedField };
-                            matchedCount++;
-                            statusText = '✓ Matched';
-                            log(`Auto-matched: "${field.name}" → "${matchedField}"`, 'success');
+                            statusText = '✓ Auto-matched';
+                            statusClass = 'matched';
                         } else {
                             select.value = 'PENDING';
                             fieldMappings[index] = { type: 'data', value: 'PENDING' };
                             statusText = '⚠ Pending';
+                            statusClass = 'pending';
                         }
                     }
                     
@@ -781,66 +1050,69 @@
                         updateMappingStatus(index, this.value);
                     };
                     
-                    inputElement = select.outerHTML;
+                    inputElement = select;
                     
                 } else if (field.type === 'yesno') {
-                    // Yes/No field - preserve existing value
                     const currentValue = (existingMappings && fieldMappings[index]) ? 
                                        fieldMappings[index].value : 'No';
                     fieldMappings[index] = { type: 'yesno', value: currentValue };
                     
-                    inputElement = `
-                        <div class="yes-no-toggle">
-                            <label>
-                                <input type="radio" name="yesno-${index}" value="Yes" 
-                                       onchange="updateYesNo(${index}, 'Yes')"
-                                       ${currentValue === 'Yes' ? 'checked' : ''}>
-                                Yes
-                            </label>
-                            <label>
-                                <input type="radio" name="yesno-${index}" value="No" 
-                                       onchange="updateYesNo(${index}, 'No')"
-                                       ${currentValue === 'No' ? 'checked' : ''}>
-                                No
-                            </label>
-                        </div>
+                    const container = document.createElement('div');
+                    container.style.display = 'flex';
+                    container.style.gap = '15px';
+                    container.innerHTML = `
+                        <label style="cursor: pointer;">
+                            <input type="radio" name="yesno-${index}" value="Yes" 
+                                   onchange="updateYesNo(${index}, 'Yes')"
+                                   ${currentValue === 'Yes' ? 'checked' : ''}>
+                            Yes
+                        </label>
+                        <label style="cursor: pointer;">
+                            <input type="radio" name="yesno-${index}" value="No" 
+                                   onchange="updateYesNo(${index}, 'No')"
+                                   ${currentValue === 'No' ? 'checked' : ''}>
+                            No
+                        </label>
                     `;
+                    inputElement = container;
                     statusText = '✓ Manual';
+                    statusClass = 'manual';
                     
                 } else if (field.type === 'text') {
-                    // Text input field - preserve existing value
                     const currentValue = (existingMappings && fieldMappings[index]) ? 
                                        fieldMappings[index].value : '';
                     fieldMappings[index] = { type: 'text', value: currentValue };
                     
-                    inputElement = `
-                        <input type="text" class="manual-input" id="text-${index}" 
-                               placeholder="Enter ${field.name}"
-                               value="${currentValue}"
-                               onchange="updateTextInput(${index}, this.value)">
-                    `;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'field-input';
+                    input.style.width = '100%';
+                    input.placeholder = `Enter ${field.name}`;
+                    input.value = currentValue;
+                    input.onchange = function() {
+                        updateTextInput(index, this.value);
+                    };
+                    
+                    inputElement = input;
                     statusText = '✓ Manual';
+                    statusClass = 'manual';
                 }
                 
                 const status = document.createElement('span');
-                status.className = 'status';
+                status.className = 'status ' + statusClass;
                 status.id = `status-${index}`;
                 status.textContent = statusText;
-                status.classList.add(statusText.includes('Manual') ? 'manual' : 
-                                   statusText.includes('Matched') ? 'matched' : 'pending');
                 
                 mappingDiv.appendChild(label);
-                mappingDiv.innerHTML += inputElement;
+                if (inputElement instanceof Node) {
+                    mappingDiv.appendChild(inputElement);
+                } else {
+                    mappingDiv.innerHTML += inputElement;
+                }
                 mappingDiv.appendChild(status);
                 
                 container.appendChild(mappingDiv);
             });
-            
-            if (!existingMappings) {
-                log(`Setup complete: ${matchedCount} fields auto-matched`, 'info');
-            } else {
-                log('Returned to mapping with preserved values', 'info');
-            }
             
             document.getElementById('mappingSection').style.display = 'block';
         }
@@ -864,10 +1136,10 @@
             fieldMappings[index].value = value;
         }
 
+        // Process data
         function processData() {
-            document.getElementById('progress').style.display = 'block';
-            clearLog();
-            updateProgress(0, 'Starting data processing...');
+            showProgress('Processing data...');
+            updateProgress(0, 'Starting processing...');
             
             processedData = [];
             let pendingCount = 0;
@@ -903,18 +1175,19 @@
             updateProgress(100, 'Processing complete!');
             
             setTimeout(() => {
+                hideProgress();
                 showPreview(pendingCount);
-                document.getElementById('progress').style.display = 'none';
-            }, 1500);
+            }, 1000);
         }
 
+        // Show preview
         function showPreview(pendingCount) {
             const previewTable = document.getElementById('previewTable');
             const warningMessage = document.getElementById('warningMessage');
             
             warningMessage.innerHTML = pendingCount > 0 
-                ? `<strong>Attention:</strong> ${pendingCount} fields marked as PENDING need to be filled.`
-                : '<strong>Success!</strong> All fields have been processed successfully.';
+                ? `⚠️ <strong>Attention:</strong> ${pendingCount} fields marked as PENDING need to be filled.`
+                : '✅ <strong>Success!</strong> All fields have been processed successfully.';
             
             previewTable.innerHTML = '';
             
@@ -962,23 +1235,18 @@
             document.getElementById('previewSection').style.display = 'block';
         }
 
+        // Download processed file
         function downloadProcessed() {
             try {
-                log('Starting download...', 'info');
-                
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.json_to_sheet(processedData);
                 XLSX.utils.book_append_sheet(wb, ws, 'Processed Data');
                 
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-                const filename = `processed_data_${timestamp}.xlsx`;
+                const filename = `processed_sku_data_${timestamp}.xlsx`;
                 
                 XLSX.writeFile(wb, filename);
-                
-                log('Download completed!', 'success');
-                
             } catch (error) {
-                log(`Error during download: ${error.message}`, 'error');
                 alert('Error downloading file: ' + error.message);
             }
         }
@@ -996,39 +1264,44 @@
             selectedHeaderRow = -1;
             
             document.getElementById('dataFile').value = '';
-            document.getElementById('dataStatus').style.display = 'none';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
             document.getElementById('headerSelectionSection').style.display = 'none';
             document.getElementById('mappingSection').style.display = 'none';
             document.getElementById('previewSection').style.display = 'none';
-            clearLog();
         }
 
-        // Event listener for data file upload
+        // File upload handler
         document.getElementById('dataFile').addEventListener('change', async (e) => {
             if (!e.target.files[0]) return;
             
-            document.getElementById('progress').style.display = 'block';
-            clearLog();
+            const file = e.target.files[0];
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.innerHTML = `
+                <strong>Selected file:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB
+            `;
+            fileInfo.style.display = 'block';
+            
+            showProgress('Reading file...');
             
             try {
-                rawDataFileData = await readDataFileForPreview(e.target.files[0]);
-                document.getElementById('dataStatus').style.display = 'inline';
-                
-                log('Data file loaded. Showing preview for header selection...', 'success');
+                rawDataFileData = await readDataFileForPreview(file);
+                updateProgress(100, 'File loaded successfully!');
                 
                 setTimeout(() => {
-                    document.getElementById('progress').style.display = 'none';
+                    hideProgress();
                     showHeaderSelectionPreview();
                 }, 1000);
                 
             } catch (error) {
-                log(`Error reading data file: ${error}`, 'error');
-                alert('Error reading data file: ' + error);
-                document.getElementById('progress').style.display = 'none';
+                hideProgress();
+                alert('Error reading file: ' + error.message);
+                fileInfo.style.display = 'none';
             }
         });
 
-        // Initialize on page load
+        // Initialize on load
         initializeTemplate();
     </script>
 </body>
